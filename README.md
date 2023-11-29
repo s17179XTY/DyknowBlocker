@@ -6,6 +6,6 @@ This is a directory-based blacklist, this means that only the directories hardco
 ## For flash drive
 To autorun in flash drive, add a file `autorun.inf` to your flash drive, content:
 
-    [Autorun]
+    [autorun]
     Open=Blocker.exe
-    Action=Start portable apps
+    UseAutoPlay=1
