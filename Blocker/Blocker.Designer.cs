@@ -38,13 +38,12 @@
             this.Exit1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.OpenLog = new System.Windows.Forms.Button();
-            this.ButtonClick = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pauseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -98,7 +97,7 @@
             // 
             this.Minimize1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Minimize1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.Minimize1.Location = new System.Drawing.Point(136, 3);
+            this.Minimize1.Location = new System.Drawing.Point(98, 4);
             this.Minimize1.Name = "Minimize1";
             this.Minimize1.Size = new System.Drawing.Size(22, 23);
             this.Minimize1.TabIndex = 2;
@@ -111,7 +110,7 @@
             // 
             this.Exit1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Exit1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.Exit1.Location = new System.Drawing.Point(158, 3);
+            this.Exit1.Location = new System.Drawing.Point(123, 4);
             this.Exit1.Name = "Exit1";
             this.Exit1.Size = new System.Drawing.Size(22, 23);
             this.Exit1.TabIndex = 1;
@@ -121,12 +120,12 @@
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.Color.Transparent;
+            this.panel2.BackColor = System.Drawing.Color.DarkRed;
             this.panel2.Controls.Add(this.Minimize1);
             this.panel2.Controls.Add(this.Exit1);
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(187, 32);
+            this.panel2.Size = new System.Drawing.Size(156, 32);
             this.panel2.TabIndex = 2;
             this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseDown);
             // 
@@ -134,25 +133,14 @@
             // 
             this.OpenLog.BackColor = System.Drawing.Color.White;
             this.OpenLog.Font = new System.Drawing.Font("Segoe UI Variable Display", 12F);
-            this.OpenLog.Location = new System.Drawing.Point(27, 38);
+            this.OpenLog.ForeColor = System.Drawing.Color.DarkRed;
+            this.OpenLog.Location = new System.Drawing.Point(10, 38);
             this.OpenLog.Name = "OpenLog";
             this.OpenLog.Size = new System.Drawing.Size(131, 31);
             this.OpenLog.TabIndex = 3;
             this.OpenLog.Text = "OpenLog";
             this.OpenLog.UseVisualStyleBackColor = false;
             this.OpenLog.Click += new System.EventHandler(this.OpenLog_Click);
-            // 
-            // ButtonClick
-            // 
-            this.ButtonClick.BackColor = System.Drawing.Color.White;
-            this.ButtonClick.Font = new System.Drawing.Font("Segoe UI Variable Display", 12F);
-            this.ButtonClick.Location = new System.Drawing.Point(27, 86);
-            this.ButtonClick.Name = "ButtonClick";
-            this.ButtonClick.Size = new System.Drawing.Size(131, 31);
-            this.ButtonClick.TabIndex = 4;
-            this.ButtonClick.Text = "Pause";
-            this.ButtonClick.UseVisualStyleBackColor = false;
-            this.ButtonClick.Click += new System.EventHandler(this.Pause_Click);
             // 
             // notifyIcon1
             // 
@@ -164,47 +152,53 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // logToolStripMenuItem
             // 
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.logToolStripMenuItem.Text = "Log";
             this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
-            // 
-            // pauseToolStripMenuItem
-            // 
-            this.pauseToolStripMenuItem.Name = "pauseToolStripMenuItem";
-            this.pauseToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.pauseToolStripMenuItem.Text = "Pause";
-            this.pauseToolStripMenuItem.Click += new System.EventHandler(this.pauseToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.logToolStripMenuItem,
-            this.pauseToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.ShowItemToolTips = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(108, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(107, 70);
             this.contextMenuStrip1.MouseHover += new System.EventHandler(this.contextMenuStrip1_MouseHover);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F);
+            this.button1.ForeColor = System.Drawing.Color.DarkRed;
+            this.button1.Location = new System.Drawing.Point(10, 75);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(131, 31);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "1";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // Blocker1
             // 
-            this.ClientSize = new System.Drawing.Size(184, 143);
-            this.Controls.Add(this.ButtonClick);
+            this.ClientSize = new System.Drawing.Size(149, 117);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.OpenLog);
             this.Controls.Add(this.panel2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -231,13 +225,12 @@
         private System.Windows.Forms.Button Exit1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button OpenLog;
-        private System.Windows.Forms.Button ButtonClick;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pauseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
 using Blocker;
+using Microsoft.Win32;
 
 namespace Blocker
 {
@@ -20,13 +21,18 @@ namespace Blocker
     {
         private readonly Blocker2 logForm;
 
+        public bool CheckRK()
+        {
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            return (rk.GetValueNames().Contains("DyknowBlocker"));
+        }
+
         public Blocker1()
         {
             InitializeComponent();
             logForm = new Blocker2(this);
         }
 
-        private static bool pause = false;
         private bool isContextMenuOpen = false;
         private static bool IsServerSocket = false;
 
@@ -76,29 +82,13 @@ namespace Blocker
 
         private void Log_Load(object sender, EventArgs e)
         {
-            if (IsServerSocket == false)
+            if (CheckRK() == true)
             {
-                try
-                {
-                    TcpListener serverSocket = new TcpListener(IPAddress.Any, 22222);
-                    serverSocket.Start();
-                    IsServerSocket = true;
-
-                    if (!serverSocket.Server.IsBound)
-                    {
-                        Console.Error.WriteLine("Another instance of the application is already running. Exiting...");
-                        Environment.Exit(0);
-                    }
-                }
-                catch (IOException)
-                {
-                    Console.Error.WriteLine("Unable to start the application. Exiting...");
-                    Environment.Exit(0);
-                }
+                button1.Text = "Start on boot : true";
             }
             else
             {
-                Thread.Sleep(MONITOR_INTERVAL);
+                button1.Text = "Start on boot : false";
             }
 
             Task.Run(() => BlockApplications());
@@ -107,7 +97,7 @@ namespace Blocker
 
         private void BlockApplications()
         {
-            if (!pause && GetBlacklist() != null)
+            if (GetBlacklist() != null)
             {
                 while (true)
                 {
@@ -180,12 +170,6 @@ namespace Blocker
         private void button2_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-
-        private void Pause_Click(object sender, EventArgs e)
-        {
-            pause = !pause;
-            ButtonClick.Text = pause ? "Continue" : "Pause";
         }
 
         private void OpenLog_Click(object sender, EventArgs e)
@@ -305,17 +289,26 @@ namespace Blocker
             
         }
 
-        private void pauseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            pause = !pause;
-            pauseToolStripMenuItem.Text = pause ? "Continue" : "Pause";
-            isContextMenuOpen = false;
-        }
-
         private void logToolStripMenuItem_Click(object sender, EventArgs e)
         {
             logForm.Show();
             notifyIcon1.Visible = false;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (CheckRK() != true)
+            {
+                button1.Text = "Start on boot : true";
+                rk.SetValue("DyknowBlocker", Application.ExecutablePath.ToString());
+            }
+            else if(CheckRK() == true)
+            {
+                rk.DeleteValue("DyknowBlocker", false);
+                button1.Text = "Start on boot : false";
+            }
         }
     }
 
