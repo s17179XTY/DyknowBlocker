@@ -66,6 +66,11 @@ namespace Blocker
             {
                 Console.WriteLine(ex.StackTrace);
             }
+            if (fileNames.Count == 0)
+            {
+                Thread.Sleep(1000);
+                return null;
+            }
             return fileNames;
         }
 
@@ -91,6 +96,10 @@ namespace Blocker
                     Environment.Exit(0);
                 }
             }
+            else
+            {
+                Thread.Sleep(MONITOR_INTERVAL);
+            }
 
             Task.Run(() => BlockApplications());
 
@@ -98,7 +107,7 @@ namespace Blocker
 
         private void BlockApplications()
         {
-            if (!pause)
+            if (!pause && GetBlacklist() != null)
             {
                 while (true)
                 {
@@ -143,11 +152,17 @@ namespace Blocker
                     //Thread.Sleep(500);
                 }
             }
+            else if (GetBlacklist() == null)
+            {
+                string NullMessage = $"Error finding files";
+                Console.WriteLine(NullMessage);
+                logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.AppendText(NullMessage + Environment.NewLine)));
+            }
             else
             {
                 try
                 {
-                    logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.Text = ""));
+                    logForm.LogBox.Clear();
                     Thread.Sleep(200);
                 }
                 catch (ThreadInterruptedException ex)
