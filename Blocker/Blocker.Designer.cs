@@ -61,7 +61,7 @@
             // 
             // Minimize
             // 
-            this.Minimize.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Minimize.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Minimize.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.Minimize.Location = new System.Drawing.Point(85, 3);
             this.Minimize.Name = "Minimize";
@@ -73,7 +73,7 @@
             // 
             // Exit
             // 
-            this.Exit.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Exit.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Exit.ImageAlign = System.Drawing.ContentAlignment.TopRight;
             this.Exit.Location = new System.Drawing.Point(107, 3);
             this.Exit.Name = "Exit";
@@ -85,7 +85,7 @@
             // 
             // button
             // 
-            this.button.Font = new System.Drawing.Font("Segoe UI Variable Display", 12F);
+            this.button.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.button.Location = new System.Drawing.Point(12, 86);
             this.button.Name = "button";
             this.button.Size = new System.Drawing.Size(107, 29);
@@ -95,46 +95,53 @@
             // 
             // Minimize1
             // 
-            this.Minimize1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Minimize1.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.Minimize1.BackColor = System.Drawing.Color.Black;
+            this.Minimize1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.Minimize1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Minimize1.Font = new System.Drawing.Font("Nirmala UI", 8F);
+            this.Minimize1.ForeColor = System.Drawing.Color.White;
             this.Minimize1.Location = new System.Drawing.Point(98, 4);
             this.Minimize1.Name = "Minimize1";
             this.Minimize1.Size = new System.Drawing.Size(22, 23);
             this.Minimize1.TabIndex = 2;
-            this.Minimize1.Text = "_";
-            this.Minimize1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.Minimize1.UseVisualStyleBackColor = true;
+            this.Minimize1.Text = "-";
+            this.Minimize1.UseVisualStyleBackColor = false;
             this.Minimize1.Click += new System.EventHandler(this.Minimize1_Click);
             // 
             // Exit1
             // 
-            this.Exit1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Exit1.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.Exit1.BackColor = System.Drawing.Color.Black;
+            this.Exit1.Cursor = System.Windows.Forms.Cursors.Default;
+            this.Exit1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.Exit1.Font = new System.Drawing.Font("Nirmala UI", 8F);
+            this.Exit1.ForeColor = System.Drawing.Color.White;
             this.Exit1.Location = new System.Drawing.Point(123, 4);
             this.Exit1.Name = "Exit1";
             this.Exit1.Size = new System.Drawing.Size(22, 23);
             this.Exit1.TabIndex = 1;
             this.Exit1.Text = "X";
-            this.Exit1.UseVisualStyleBackColor = true;
-            this.Exit1.Click += new System.EventHandler(this.button2_Click);
+            this.Exit1.UseVisualStyleBackColor = false;
+            this.Exit1.Click += new System.EventHandler(this.Button2_Click);
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.Color.DarkRed;
+            this.panel2.BackColor = System.Drawing.Color.Black;
             this.panel2.Controls.Add(this.Minimize1);
             this.panel2.Controls.Add(this.Exit1);
+            this.panel2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(156, 32);
             this.panel2.TabIndex = 2;
-            this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseDown);
+            this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Panel2_MouseDown);
             // 
             // OpenLog
             // 
             this.OpenLog.BackColor = System.Drawing.Color.White;
-            this.OpenLog.Font = new System.Drawing.Font("Segoe UI Variable Display", 12F);
+            this.OpenLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.OpenLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.OpenLog.ForeColor = System.Drawing.Color.DarkRed;
-            this.OpenLog.Location = new System.Drawing.Point(10, 38);
+            this.OpenLog.Location = new System.Drawing.Point(11, 41);
             this.OpenLog.Name = "OpenLog";
             this.OpenLog.Size = new System.Drawing.Size(131, 31);
             this.OpenLog.TabIndex = 3;
@@ -146,29 +153,29 @@
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "Blocker";
-            this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseClick);
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon1_MouseDoubleClick);
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(116, 24);
             this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // logToolStripMenuItem
             // 
             this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(116, 24);
             this.logToolStripMenuItem.Text = "Log";
-            this.logToolStripMenuItem.Click += new System.EventHandler(this.logToolStripMenuItem_Click);
+            this.logToolStripMenuItem.Click += new System.EventHandler(this.LogToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(106, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(116, 24);
             this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
@@ -179,31 +186,37 @@
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.ShowItemToolTips = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(107, 70);
-            this.contextMenuStrip1.MouseHover += new System.EventHandler(this.contextMenuStrip1_MouseHover);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(117, 76);
+            this.contextMenuStrip1.MouseHover += new System.EventHandler(this.ContextMenuStrip1_MouseHover);
             // 
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.White;
-            this.button1.Font = new System.Drawing.Font("Segoe UI Variable Display", 9F);
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.button1.ForeColor = System.Drawing.Color.DarkRed;
-            this.button1.Location = new System.Drawing.Point(10, 75);
+            this.button1.Location = new System.Drawing.Point(11, 78);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(131, 31);
             this.button1.TabIndex = 5;
             this.button1.Text = "1";
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            this.button1.Click += new System.EventHandler(this.Button1_Click_1);
             // 
             // Blocker1
             // 
-            this.ClientSize = new System.Drawing.Size(149, 117);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(152, 117);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.OpenLog);
             this.Controls.Add(this.panel2);
+            this.Font = new System.Drawing.Font("Nirmala UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Blocker1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Load += new System.EventHandler(this.Log_Load);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Blocker1_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Blocker1_MouseMove);

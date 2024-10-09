@@ -13,12 +13,9 @@ namespace Blocker
 {
     public partial class Blocker2 : Form
     {
-        //public Blocker2()
-        //{
-        //    InitializeComponent();
-        //}
-
         private readonly Blocker1 mainForm;
+
+        public string Send_log { get; set; }
 
         public Blocker2(Blocker1 mainForm)
         {
@@ -34,7 +31,12 @@ namespace Blocker
         private void Exit2_Click(object sender, EventArgs e)
         {
             this.Hide();
-            mainForm.Show();
+            Send_log = "0";
+            Box.Clear();
+            if (mainForm.NotifyIconV.Visible != true)
+            {
+                mainForm.Show();
+            }
         }
 
         public void AppendLog(string logMessage)
@@ -42,7 +44,7 @@ namespace Blocker
             Box.AppendText(logMessage + Environment.NewLine);
         }
 
-        private void box_TextChanged(object sender, EventArgs e)
+        private void Box_TextChanged(object sender, EventArgs e)
         {
 
         }
@@ -52,7 +54,7 @@ namespace Blocker
             
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void TextBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
@@ -60,7 +62,7 @@ namespace Blocker
         private bool isDragging = false;
         private Point dragStart;
 
-        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        private void Panel1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -80,7 +82,7 @@ namespace Blocker
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
 
         }
@@ -103,7 +105,7 @@ namespace Blocker
             }
         }
 
-        private void panel1_MouseMove_1(object sender, MouseEventArgs e)
+        private void Panel1_MouseMove_1(object sender, MouseEventArgs e)
         {
             if (isDragging)
             {
@@ -112,13 +114,18 @@ namespace Blocker
             }
         }
 
-        private void panel1_MouseUp_1(object sender, MouseEventArgs e)
+        private void Panel1_MouseUp_1(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 isDragging = false;
                 Capture = false;
             }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

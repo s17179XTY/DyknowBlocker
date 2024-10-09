@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
-using Blocker;
 using Microsoft.Win32;
+using System.Net.Http;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Linq.Expressions;
+using System.Web;
 
 namespace Blocker
 {
@@ -21,21 +19,144 @@ namespace Blocker
     {
         private readonly Blocker2 logForm;
 
+        private readonly Bar bar;
+
+        public string Send_log2 { get; set; }
+
+        public NotifyIcon NotifyIconV
+        {
+            get { return notifyIcon1; }
+        }
+
+        public const string Send_log = "0";
+
         public bool CheckRK()
         {
             RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             return (rk.GetValueNames().Contains("DyknowBlocker"));
         }
 
+        private async void CheckVersion()
+        {
+            string versionUrl = "https://raw.githubusercontent.com/s17179XTY/DyknowBlocker/refs/heads/master/version_check";
+            string fileUrl = "https://1010.filemail.com/api/file/get?filekey=DG8sz7szDhWZ7NsqanSMlT2Osvx_Cxc_cwZKnkL1WIE66rxDldqBBaJkPA&skipreg=true&pk_vid=886c528a1ec61cc4172947109956cdf4";
+
+            string localVersion = "1.1.5";
+            string FilePath = @"C:\Users\s17179\source\repos\DyknowBlocker\Blocker\bin\Debug\README.md";
+
+            using (HttpClient client = new HttpClient())
+            {
+                string remoteVersion = await client.GetStringAsync(versionUrl);
+                remoteVersion = remoteVersion.Trim();
+                try
+                {
+                    if (remoteVersion != localVersion)
+                    {
+                        MessageBox.Show($"New version detected: {remoteVersion}");
+                        bar.Show();
+                        this.Visible = false;
+                        try
+                        {
+                            using (HttpResponseMessage response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead))
+                            {
+                                response.EnsureSuccessStatusCode();
+
+                                long totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                                bar.progressBar.Value = 0;
+                                bar.progressBar.Maximum = 100;
+
+                                if (totalBytes == -1L)
+                                {
+                                    MessageBox.Show("The file size is unknown, this might cause progress reporting issues");
+                                }
+
+                                try
+                                {
+                                    using (Stream contentStream = await response.Content.ReadAsStreamAsync(), fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                                    {
+                                        byte[] buffer = new byte[8192];
+                                        long totalBytesRead = 0;
+                                        int bytesRead;
+
+                                        while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                                        {
+                                            await fileStream.WriteAsync(buffer, 0, bytesRead);
+                                            totalBytesRead += bytesRead;
+
+                                            if (totalBytes != -1)
+                                            {
+                                                double progress = (double)totalBytesRead / totalBytes * 100;
+                                                bar.progressBar.Value = (int)progress;
+                                                MessageBox.Show($"Progress: {(int)progress}% ({totalBytesRead} of {totalBytes} bytes");
+                                            }
+                                        }
+                                    }
+                                    MessageBox.Show("File downloaded successfully", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    bar.Visible = false;
+                                    this.Visible = true;
+                                    Application.Exit();
+                                }
+                                catch (HttpRequestException ex)
+                                {
+                                    MessageBox.Show($"Error fetching version or file: {ex.Message}");
+                                    bar.Visible = false;
+                                    this.Visible = true;
+                                }
+                            }
+                        }
+                        catch (HttpRequestException e)
+                        {
+                            MessageBox.Show($"Error fetching version or file: {e.Message}");
+                            bar.Visible = false;
+                            this.Visible = true;
+                        }
+                        catch (IOException e)
+                        {
+                            MessageBox.Show($"Error handling file: {e.Message}");
+                            bar.Visible = false;
+                            this.Visible = true;
+                        }
+                        catch (Exception e)
+                        {
+                            MessageBox.Show($"Error handling file: {e.Message}");
+                            bar.Visible = false;
+                            this.Visible = true;
+                        }
+                    }
+                    else
+                    {
+                        BlockApplications();
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    MessageBox.Show($"Error fetching version or file: {ex.Message}");
+                    bar.Visible = false;
+                    this.Visible = true;
+                }
+            }
+        }
+
         public Blocker1()
         {
             InitializeComponent();
             logForm = new Blocker2(this);
+            bar = new Bar();
+            if (CheckRK() == true)
+            {
+                button1.Text = "Start on boot : true";
+            }
+            else
+            {
+                button1.Text = "Start on boot : false";
+            }
+            Task.Run(() => BlockApplications());
+            //CheckVersion();
         }
 
-        private bool isContextMenuOpen = false;
-        private static bool IsServerSocket = false;
 
+
+        private bool isContextMenuOpen = false;
         private const int INITIAL_DELAY = 5;
         private const int MAX_DELAY = 10;
         private static int backoffDelay = INITIAL_DELAY;
@@ -46,7 +167,7 @@ namespace Blocker
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             
         }
@@ -61,7 +182,6 @@ namespace Blocker
                 {
                     string fileName = Path.GetFileName(path);
                     fileName = Path.GetFileNameWithoutExtension(fileName);
-                    //fileNames.Add(fileName);
                     if (!fileName.Equals("DyKnow", StringComparison.OrdinalIgnoreCase))
                     {
                         fileNames.Add(fileName);
@@ -82,17 +202,14 @@ namespace Blocker
 
         private void Log_Load(object sender, EventArgs e)
         {
-            if (CheckRK() == true)
-            {
-                button1.Text = "Start on boot : true";
-            }
-            else
-            {
-                button1.Text = "Start on boot : false";
-            }
+            
+        }
 
-            Task.Run(() => BlockApplications());
-
+        private void OpenLog_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Send_log2 = "1";
+            logForm.Show();
         }
 
         private void BlockApplications()
@@ -114,16 +231,24 @@ namespace Blocker
                             {
                                 Thread.Sleep(backoffDelay);
                                 process.Kill();
-                                string logMessage = $"Blocked and terminated process '{processName}'";
-                                Console.WriteLine(logMessage);
-                                logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.AppendText(logMessage + Environment.NewLine)));
+                                if (Send_log2 == "1")
+                                {
+                                    string logMessage = $"Blocked and terminated process '{processName}'";
+                                    logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.AppendText(logMessage + Environment.NewLine)));
+                                }
+                                else
+                                {
+                                    logForm.LogBox.Clear();
+                                }
                                 backoffDelay = INITIAL_DELAY;
                             }
                             catch (Exception ex)
                             {
-                                string errorMessage = $"Error blocking process '{processName}': {ex.Message}";
-                                Console.WriteLine(errorMessage);
-                                //logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.AppendText(errorMessage + Environment.NewLine)));
+                                if (Send_log2 == "1")
+                                {
+                                    string errorMessage = $"Error blocking process '{processName}': {ex.Message}";
+                                    logForm.LogBox.BeginInvoke((MethodInvoker)(() => logForm.LogBox.AppendText(errorMessage + Environment.NewLine)));
+                                }
                             }
                         }
                         try
@@ -167,15 +292,9 @@ namespace Blocker
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-
-        private void OpenLog_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            logForm.Show();
         }
 
         private void Minimize1_Click(object sender, EventArgs e)
@@ -188,7 +307,7 @@ namespace Blocker
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;
@@ -226,7 +345,7 @@ namespace Blocker
             }
         }
 
-        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e is MouseEventArgs mouseEventArgs && mouseEventArgs.Button == MouseButtons.Right)
             {
@@ -243,7 +362,7 @@ namespace Blocker
             }
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Show();
             this.WindowState = FormWindowState.Normal;
@@ -251,12 +370,12 @@ namespace Blocker
             isContextMenuOpen = false;
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void panel2_MouseDown(object sender, MouseEventArgs e)
+        private void Panel2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -266,7 +385,7 @@ namespace Blocker
             }
         }
 
-        private void panel2_MouseMove(object sender, MouseEventArgs e)
+        private void Panel2_MouseMove(object sender, MouseEventArgs e)
         {
             if (isDragging)
             {
@@ -275,7 +394,7 @@ namespace Blocker
             }
         }
 
-        private void panel2_MouseUp(object sender, MouseEventArgs e)
+        private void Panel2_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -284,18 +403,17 @@ namespace Blocker
             }
         }
 
-        private void contextMenuStrip1_MouseHover(object sender, EventArgs e)
+        private void ContextMenuStrip1_MouseHover(object sender, EventArgs e)
         {
             
         }
 
-        private void logToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             logForm.Show();
-            notifyIcon1.Visible = false;
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void Button1_Click_1(object sender, EventArgs e)
         {
             RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
