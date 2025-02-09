@@ -12,15 +12,13 @@ using System.Net.Http;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Linq.Expressions;
 using System.Web;
+using System.Security.Policy;
 
 namespace Blocker
 {
     public partial class Blocker1 : Form
     {
         private readonly Blocker2 logForm;
-
-        private readonly Bar bar;
-
         public string Send_log2 { get; set; }
 
         public NotifyIcon NotifyIconV
@@ -36,91 +34,48 @@ namespace Blocker
             return (rk.GetValueNames().Contains("DyknowBlocker"));
         }
 
-        private async void CheckVersion()
+        public async Task CheckVersion()
         {
             string versionUrl = "https://raw.githubusercontent.com/s17179XTY/DyknowBlocker/refs/heads/master/version_check";
-            string fileUrl = "https://1010.filemail.com/api/file/get?filekey=DG8sz7szDhWZ7NsqanSMlT2Osvx_Cxc_cwZKnkL1WIE66rxDldqBBaJkPA&skipreg=true&pk_vid=886c528a1ec61cc4172947109956cdf4";
+            string zipUrl = "https://raw.githubusercontent.com/s17179XTY/DyknowBlocker/refs/heads/master/file_path";
 
-            string localVersion = "1.1.5";
-            string FilePath = @"C:\Users\s17179\source\repos\DyknowBlocker\Blocker\bin\Debug\README.md";
+            string localVersion = "1.2";
 
             using (HttpClient client = new HttpClient())
             {
                 string remoteVersion = await client.GetStringAsync(versionUrl);
                 remoteVersion = remoteVersion.Trim();
+                string fileUrl = await client.GetStringAsync(zipUrl);
+                fileUrl = fileUrl.Trim();
+
+                string FilePath = System.AppDomain.CurrentDomain.BaseDirectory + @"\" + remoteVersion + ".zip";
                 try
                 {
                     if (remoteVersion != localVersion)
                     {
                         MessageBox.Show($"New version detected: {remoteVersion}");
-                        bar.Show();
-                        this.Visible = false;
                         try
                         {
-                            using (HttpResponseMessage response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead))
+                            using (HttpClient httpClient = new HttpClient())
                             {
+                                var response = await httpClient.GetAsync(fileUrl);
                                 response.EnsureSuccessStatusCode();
 
-                                long totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                                bar.progressBar.Value = 0;
-                                bar.progressBar.Maximum = 100;
-
-                                if (totalBytes == -1L)
+                                using (var fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None))
                                 {
-                                    MessageBox.Show("The file size is unknown, this might cause progress reporting issues");
-                                }
-
-                                try
-                                {
-                                    using (Stream contentStream = await response.Content.ReadAsStreamAsync(), fileStream = new FileStream(FilePath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
-                                    {
-                                        byte[] buffer = new byte[8192];
-                                        long totalBytesRead = 0;
-                                        int bytesRead;
-
-                                        while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                                        {
-                                            await fileStream.WriteAsync(buffer, 0, bytesRead);
-                                            totalBytesRead += bytesRead;
-
-                                            if (totalBytes != -1)
-                                            {
-                                                double progress = (double)totalBytesRead / totalBytes * 100;
-                                                bar.progressBar.Value = (int)progress;
-                                                MessageBox.Show($"Progress: {(int)progress}% ({totalBytesRead} of {totalBytes} bytes");
-                                            }
-                                        }
-                                    }
-                                    MessageBox.Show("File downloaded successfully", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                    bar.Visible = false;
-                                    this.Visible = true;
-                                    Application.Exit();
-                                }
-                                catch (HttpRequestException ex)
-                                {
-                                    MessageBox.Show($"Error fetching version or file: {ex.Message}");
-                                    bar.Visible = false;
-                                    this.Visible = true;
+                                    await response.Content.CopyToAsync(fileStream);
                                 }
                             }
+                            MessageBox.Show("File downloaded successfully", "Download Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            Application.Exit();
                         }
                         catch (HttpRequestException e)
                         {
                             MessageBox.Show($"Error fetching version or file: {e.Message}");
-                            bar.Visible = false;
-                            this.Visible = true;
                         }
                         catch (IOException e)
                         {
                             MessageBox.Show($"Error handling file: {e.Message}");
-                            bar.Visible = false;
-                            this.Visible = true;
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show($"Error handling file: {e.Message}");
-                            bar.Visible = false;
-                            this.Visible = true;
                         }
                     }
                     else
@@ -131,8 +86,6 @@ namespace Blocker
                 catch (HttpRequestException ex)
                 {
                     MessageBox.Show($"Error fetching version or file: {ex.Message}");
-                    bar.Visible = false;
-                    this.Visible = true;
                 }
             }
         }
@@ -141,7 +94,6 @@ namespace Blocker
         {
             InitializeComponent();
             logForm = new Blocker2(this);
-            bar = new Bar();
             if (CheckRK() == true)
             {
                 button1.Text = "Start on boot : true";
@@ -150,8 +102,8 @@ namespace Blocker
             {
                 button1.Text = "Start on boot : false";
             }
+            Task.Run(() => CheckVersion());
             Task.Run(() => BlockApplications());
-            //CheckVersion();
         }
 
 
