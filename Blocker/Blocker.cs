@@ -37,9 +37,9 @@ namespace Blocker
         public async Task CheckVersion()
         {
             string versionUrl = "https://raw.githubusercontent.com/s17179XTY/DyknowBlocker/refs/heads/master/version_check";
-            string zipUrl = "https://raw.githubusercontent.com/s17179XTY/DyknowBlocker/refs/heads/master/file_path";
+            string zipUrl = "https://github.com/s17179XTY/DyknowBlocker/releases/download/" + versionUrl + "/" + versionUrl + ".zip";
 
-            string localVersion = "1.2";
+            string localVersion = "v1.2";
 
             using (HttpClient client = new HttpClient())
             {
