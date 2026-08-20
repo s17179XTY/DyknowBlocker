@@ -1,0 +1,35 @@
+<Window x:Class="DyKnowWatchdog.ToastHintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="Manual"
+        UseLayoutRounding="True">
+    <Border x:Name="Card"
+            Background="White"
+            CornerRadius="10"
+            Padding="14,10"
+            BorderBrush="#E5E5EA"
+            BorderThickness="1"
+            Margin="0,0,20,20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.18" Color="Black" />
+        </Border.Effect>
+        <StackPanel Orientation="Horizontal">
+            <Border Width="28" Height="28" CornerRadius="7" Background="#34C759" VerticalAlignment="Center">
+                <Image Width="16" Height="16"
+                       Source="pack://application:,,,/Resources/app_32.png"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock x:Name="HintText" Text="关闭时最小化到托盘"
+                       FontSize="12" Foreground="#636366" VerticalAlignment="Center"
+                       Margin="10,0,0,0" />
+        </StackPanel>
+    </Border>
+</Window>

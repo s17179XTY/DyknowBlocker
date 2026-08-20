@@ -1,0 +1,340 @@
+<Window x:Class="DyKnowWatchdog.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        mc:Ignorable="d"
+        Title="DyKnow Watchdog"
+        Width="460"
+        SizeToContent="Height"
+        MinWidth="460"
+        MaxWidth="460"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        Icon="/DyKnowWatchdog;component/Resources/app.ico"
+        FontFamily="Segoe UI, Microsoft YaHei UI"
+        TextOptions.TextFormattingMode="Display"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <!-- Toggle button: red while running, green while stopped -->
+        <Style x:Key="ToggleBtnStyle" TargetType="Button" BasedOn="{StaticResource BaseBtnStyle}">
+            <Setter Property="Background" Value="{StaticResource RedBrush}" />
+            <Setter Property="Tag" Value="#E0342B" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                    <Setter Property="Background" Value="{StaticResource GreenBrush}" />
+                    <Setter Property="Tag" Value="#2DB84E" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 语言按钮 active 状态 -->
+        <Style x:Key="LangBtnActiveStyle" TargetType="Button" BasedOn="{StaticResource LangBtnStyle}">
+            <Setter Property="Background" Value="#2EFFFFFF" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="zh" />
+                        <Condition Binding="{Binding Language}" Value="zh" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="#61FFFFFF" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="en" />
+                        <Condition Binding="{Binding Language}" Value="en" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="#61FFFFFF" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Log list item: flat, no selection chrome -->
+        <Style x:Key="LogItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="WindowBorder"
+            Background="White"
+            CornerRadius="12"
+            BorderBrush="#E5E5EA"
+            BorderThickness="1"
+            MouseLeftButtonDown="WindowBorder_MouseLeftButtonDown">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="5" Direction="270" Opacity="0.22" Color="Black" />
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- ================= Title Bar (#007aff) ================= -->
+            <Border Grid.Row="0" Background="#007AFF" CornerRadius="12,12,0,0">
+                <Grid Margin="16,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- left: status dot + title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Grid Width="20" Height="20" Margin="0,0,8,0">
+                            <!-- glow (pulse) -->
+                            <Ellipse x:Name="TitleGlow" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#6634C759" />
+                                        <Setter Property="Opacity" Value="0.6" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                             From="0.35" To="0.9" Duration="0:0:1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                <Setter Property="Fill" Value="#66FF3B30" />
+                                                <Setter Property="Opacity" Value="0.8" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <!-- dot -->
+                            <Ellipse Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="#34C759" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                <Setter Property="Fill" Value="#FF3B30" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                        </Grid>
+                        <TextBlock Text="{Binding T.Title}" Foreground="White" FontSize="14" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- right: lang buttons + close -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="中文" Tag="zh" Style="{StaticResource LangBtnActiveStyle}"
+                                Command="{Binding SetLanguageCommand}" CommandParameter="zh" />
+                        <Button Content="English" Tag="en" Style="{StaticResource LangBtnActiveStyle}" Margin="6,0,0,0"
+                                Command="{Binding SetLanguageCommand}" CommandParameter="en" />
+                        <Button Content="✕" Style="{StaticResource CloseBtnStyle}" Margin="10,0,0,0" Click="CloseBtn_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ================= Content ================= -->
+            <Grid Grid.Row="1" Margin="16,14,16,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" /> <!-- status header -->
+                    <RowDefinition Height="Auto" /> <!-- info grid -->
+                    <RowDefinition Height="Auto" /> <!-- buttons -->
+                    <RowDefinition Height="Auto" /> <!-- view logs -->
+                    <RowDefinition Height="Auto" /> <!-- log section -->
+                </Grid.RowDefinitions>
+
+                <!-- status header -->
+                <Grid Grid.Row="0" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Ellipse Grid.Column="0" Width="10" Height="10" VerticalAlignment="Center">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="#34C759" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                        <Setter Property="Fill" Value="#FF3B30" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                    <TextBlock Grid.Column="1" Text="{Binding StatusText}" Margin="8,0,0,0"
+                               FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="#1D1D1F" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                        <Setter Property="Foreground" Value="#FF3B30" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock Grid.Column="2" Text="{Binding Version}" HorizontalAlignment="Right"
+                               FontSize="11" Foreground="#8E8E93" VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- info grid: 监控目录 | 监控间隔 -->
+                <Grid Grid.Row="1" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Style="{StaticResource InfoCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding T.MonitorLabel}" Style="{StaticResource InfoLabelStyle}" />
+                            <TextBlock Text="{Binding MonitorPath}" Style="{StaticResource InfoValueStyle}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Style="{StaticResource InfoCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="{Binding T.IntervalLabel}" Style="{StaticResource InfoLabelStyle}" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border BorderThickness="1" CornerRadius="4" Padding="2,1"
+                                        BorderBrush="Transparent">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#C5C5CC" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBox Text="{Binding IntervalInput, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="44"
+                                             FontFamily="Consolas" FontSize="12" Foreground="#1D1D1F"
+                                             Background="Transparent" BorderThickness="0"
+                                             Padding="0" VerticalContentAlignment="Center"
+                                             KeyDown="IntervalBox_KeyDown"
+                                             LostFocus="IntervalBox_LostFocus" />
+                                </Border>
+                                <TextBlock Text="s" FontFamily="Consolas" FontSize="12" Foreground="#1D1D1F"
+                                           Margin="1,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- button group: 停止/启动 + 重启 -->
+                <Grid Grid.Row="2" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="{Binding StopButtonText}" Style="{StaticResource ToggleBtnStyle}"
+                            Command="{Binding ToggleCommand}" />
+                    <Button Grid.Column="2" Content="{Binding T.Restart}" Style="{StaticResource RestartBtnStyle}"
+                            Command="{Binding RestartCommand}" />
+                </Grid>
+
+                <!-- 查看日志 (plain full width) -->
+                <Button Grid.Row="3" Content="{Binding T.ViewLogs}" Style="{StaticResource PlainBtnStyle}"
+                        Command="{Binding OpenLogsCommand}" />
+
+                <!-- log section -->
+                <Grid Grid.Row="4">
+                    <Border Background="#F5F5F7" CornerRadius="8" ClipToBounds="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" BorderBrush="#E5E5EA" BorderThickness="0,0,0,1" Padding="12,7">
+                                <Grid>
+                                    <TextBlock Text="{Binding T.LogsLabel}" FontSize="11" Foreground="#8E8E93"
+                                               VerticalAlignment="Center" />
+                                    <Button Content="{Binding T.Clear}" HorizontalAlignment="Right"
+                                            FontSize="11" Foreground="#007AFF" Background="Transparent"
+                                            BorderThickness="0" Cursor="Hand" Padding="6,2"
+                                            Command="{Binding ClearLogCommand}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="6,2">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Bd" Property="Background" Value="#1A007AFF" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <ListBox Grid.Row="1" x:Name="LogList"
+                                     ItemsSource="{Binding Logs}"
+                                     MaxHeight="120"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     ItemContainerStyle="{StaticResource LogItemStyle}"
+                                     Padding="12,8"
+                                     Focusable="False">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Time}" Style="{StaticResource LogEntryStyle}"
+                                                       Foreground="#8E8E93" />
+                                            <TextBlock Text="{Binding Text}" Style="{StaticResource LogEntryStyle}"
+                                                       Margin="5,0,0,0"
+                                                       Foreground="{Binding Level, Converter={StaticResource LogLevelBrush}}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- ================= 系统托盘 ================= -->
+            <tb:TaskbarIcon x:Name="Tray"
+                            ToolTipText="DyKnow Watchdog"
+                            TrayMouseDoubleClick="Tray_DoubleClick"
+                            TrayMouseMove="Tray_MouseMove">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="打开窗口" Click="Tray_OpenWindow" />
+                        <Separator />
+                        <MenuItem x:Name="TrayToggleItem" Header="停止服务" Click="Tray_Toggle" />
+                        <MenuItem x:Name="TrayAutoStartItem" Header="开机自启动" IsCheckable="True" Click="Tray_AutoStart" />
+                        <Separator />
+                        <MenuItem Header="退出" Click="Tray_Exit" />
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+        </Grid>
+    </Border>
+</Window>

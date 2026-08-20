@@ -1,0 +1,243 @@
+<Application x:Class="DyKnowWatchdog.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:DyKnowWatchdog.Converters">
+    <Application.Resources>
+
+        <!-- ===== Colors (from dyknow-preview.html) ===== -->
+        <Color x:Key="PrimaryBlue">#007AFF</Color>
+        <Color x:Key="Green">#34C759</Color>
+        <Color x:Key="GreenHover">#2DB84E</Color>
+        <Color x:Key="Red">#FF3B30</Color>
+        <Color x:Key="RedHover">#E0342B</Color>
+        <Color x:Key="BlueHover">#006EED</Color>
+        <Color x:Key="Orange">#FF9F0A</Color>
+        <Color x:Key="PageBg">#F5F5F7</Color>
+        <Color x:Key="BorderColor">#E5E5EA</Color>
+        <Color x:Key="TextPrimary">#1D1D1F</Color>
+        <Color x:Key="TextSecondary">#8E8E93</Color>
+        <Color x:Key="TextLog">#636366</Color>
+        <Color x:Key="PlainBtnBg">#E5E5EA</Color>
+        <Color x:Key="PlainBtnHover">#D5D5DA</Color>
+
+        <SolidColorBrush x:Key="PrimaryBlueBrush" Color="{StaticResource PrimaryBlue}" />
+        <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource Green}" />
+        <SolidColorBrush x:Key="RedBrush" Color="{StaticResource Red}" />
+        <SolidColorBrush x:Key="OrangeBrush" Color="{StaticResource Orange}" />
+        <SolidColorBrush x:Key="PageBgBrush" Color="{StaticResource PageBg}" />
+        <SolidColorBrush x:Key="BorderBrushColor" Color="{StaticResource BorderColor}" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+        <SolidColorBrush x:Key="TextLogBrush" Color="{StaticResource TextLog}" />
+        <SolidColorBrush x:Key="PlainBtnBrush" Color="{StaticResource PlainBtnBg}" />
+
+        <conv:LogLevelToBrushConverter x:Key="LogLevelBrush" />
+
+        <!-- ===== Base button style: rounded 8, pad 9x16, 13px ===== -->
+        <Style x:Key="BaseBtnStyle" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="16,9">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Tag}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 停止服务 (red) -->
+        <Style x:Key="StopBtnStyle" TargetType="Button" BasedOn="{StaticResource BaseBtnStyle}">
+            <Setter Property="Background" Value="{StaticResource RedBrush}" />
+            <Setter Property="Tag" Value="#E0342B" />
+        </Style>
+
+        <!-- 启动服务 (green) -->
+        <Style x:Key="StartBtnStyle" TargetType="Button" BasedOn="{StaticResource BaseBtnStyle}">
+            <Setter Property="Background" Value="{StaticResource GreenBrush}" />
+            <Setter Property="Tag" Value="#2DB84E" />
+        </Style>
+
+        <!-- 重启 (blue) -->
+        <Style x:Key="RestartBtnStyle" TargetType="Button" BasedOn="{StaticResource BaseBtnStyle}">
+            <Setter Property="Background" Value="{StaticResource PrimaryBlueBrush}" />
+            <Setter Property="Tag" Value="#006EED" />
+        </Style>
+
+        <!-- 查看日志 (plain gray, full width) -->
+        <Style x:Key="PlainBtnStyle" TargetType="Button" BasedOn="{StaticResource BaseBtnStyle}">
+            <Setter Property="Background" Value="{StaticResource PlainBtnBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="Tag" Value="#D5D5DA" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="16,10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#D5D5DA" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.96" ScaleY="0.96" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 语言切换按钮 (pill) -->
+        <Style x:Key="LangBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2EFFFFFF" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="5" Padding="10,4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4DFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.95" ScaleY="0.95" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 关闭按钮 X -->
+        <Style x:Key="CloseBtnStyle" TargetType="Button">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Background" Value="#26FFFFFF" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#4DFFFFFF" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <ScaleTransform ScaleX="0.92" ScaleY="0.92" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 信息卡片 -->
+        <Style x:Key="InfoCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource PageBgBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+
+        <Style x:Key="InfoLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,5" />
+        </Style>
+
+        <Style x:Key="InfoValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="LineHeight" Value="17" />
+        </Style>
+
+        <!-- 日志项 -->
+        <Style x:Key="LogEntryStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{StaticResource TextLogBrush}" />
+            <Setter Property="LineHeight" Value="19" />
+        </Style>
+
+        <Style x:Key="ThinScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="4" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="#C5C5CC" CornerRadius="2" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Thin scrollbars everywhere (preview: 4px #c5c5cc) -->
+        <Style TargetType="ScrollBar" BasedOn="{StaticResource ThinScrollBar}" />
+
+    </Application.Resources>
+</Application>

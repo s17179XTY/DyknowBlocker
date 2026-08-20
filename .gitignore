@@ -1,7 +1,9 @@
-﻿bin/
+bin/
 obj/
 .vs/
 *.user
 .worktrees/
 TestResults/
 *.suo
+
+.dsh-vision-toolkit/
